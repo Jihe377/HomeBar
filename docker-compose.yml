@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: homebar-backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=sqlite:///./homebar.db
+      - ENVIRONMENT=production
+    volumes:
+      - ./backend/homebar.db:/app/homebar.db
+    ports:
+      - "8000:8000"
+    networks:
+      - homebar-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: homebar-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - homebar-network
+
+networks:
+  homebar-network:
+    driver: bridge
